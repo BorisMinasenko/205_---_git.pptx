@@ -1,0 +1,215 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+import pylab
+from numpy import linalg as la
+from mpl_toolkits.mplot3d import Axes3D
+
+k1=1
+k2=1
+k3=1
+pp=2
+pm=1                 
+Pr0=0
+ppp=0
+sup=0
+sup1=0
+sup2=0
+
+
+#t=0.000156
+#h=0.025
+#hh=0.025
+tt=0.000156
+t=0.0025
+h=0.025
+hh=0.025
+
+
+tt1=1+int(1/tt) 
+t1=1+int(1/t) 
+hh1=1+int(1/hh) 
+h1=1+int(1/h) 
+p=np.zeros((h1,hh1,t1))
+Pr=np.zeros((h1,hh1,tt1))
+Prr=np.zeros((h1,hh1,t1))
+maxk=[]
+
+u=np.zeros((h1,hh1,t1))
+v=np.zeros((h1,hh1,t1))
+R=np.zeros((h1,hh1,t1))
+
+i=0 
+k=0
+j=0
+ii=0
+kk=0
+
+for i in range(0,h1): 
+    for k in range(0,hh1):
+        if(k>=(hh1-1)/2):
+            p[i][k][0]=pp
+            Pr[i][k][0]=pp*((hh1-1)*hh-k*hh)
+            Prr[i][k][0]=pp*((hh1-1)*hh-k*hh)
+        else:
+            p[i][k][0]=pm
+            Pr[i][k][0]=pp*(hh1-1)*hh/2+pm*((hh1-1)*hh/2-k*hh)
+            Prr[i][k][0]=pp*(hh1-1)*hh/2+pm*((hh1-1)*hh/2-k*hh)
+            
+
+                
+x=np.arange(0,1+h,h)
+
+y=np.arange(0,1+hh,hh)
+
+
+xx,yy=np.meshgrid(x,y)
+
+for j in range(1,t1):
+      
+        for i in range(1,h1-1): 
+    
+            for k in range(1,hh1-1):
+                
+                    
+                    
+                u[i][k][j-1]=(-k1*(Prr[i+1][k][j-1]-Prr[i][k][j-1])/h)
+                u[0][k][j-1]=0
+                u[h1-1][k][j-1]=0
+                u[h1-1][0][j-1]=0
+                u[0][hh1-1][j-1]=0
+                u[0][0][j-1]=0
+                u[h1-1][hh1-1][j-1]=0
+                u[i][0][j-1]=0
+                u[i][hh1-1][j-1]=0
+                
+                v[i][k][j-1]=-k1*(Prr[i][k+1][j-1]-Prr[i][k][j-1])/hh-k3*p[i][k][j-1]  
+                v[0][k][j-1]=0   
+                v[h1-1][k][j-1]=0
+                v[h1-1][0][j-1]=0
+                v[0][hh1-1][j-1]=0
+                v[0][0][j-1]=0
+                v[h1-1][hh1-1][j-1]=0
+                v[i][0][j-1]=0
+                v[i][hh1-1][j-1]=0
+            
+                R[i][k][j-1]=pp+pm-2*p[i][k][j-1]
+                R[i][0][j-1]=pp+pm-2*p[i][0][j-1]
+                R[h1-1][k][j-1]=pp+pm-2*p[h1-1][k][j-1]
+                R[0][k][j-1]=pp+pm-2*p[0][k][j-1]
+                R[0][0][j-1]=pp+pm-2*p[0][0][j-1]
+                R[i][hh1-1][j-1]=pp+pm-2*p[i][hh1-1][j-1]
+                R[h1-1][hh1-1][j-1]=pp+pm-2*p[h1-1][hh1-1][j-1]
+                R[h1-1][0][j-1]=pp+pm-2*p[h1-1][0][j-1]
+                R[0][hh1-1][j-1]=pp+pm-2*p[0][hh1-1][j-1]
+                
+               
+                p[i][k][j]=p[i][k][j-1]-((u[i][k][j-1]+np.abs(u[i][k][j-1]))/2*(p[i][k][j-1]-p[i-1][k][j-1])+(u[i][k][j-1]-np.abs(u[i][k][j-1]))/2*(p[i+1][k][j-1]-p[i][k][j-1])+p[i][k][j-1]*(u[i+1][k][j-1]-u[i][k][j-1]))*(t/h)-((v[i][k][j-1]+np.abs(v[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-1])+(v[i][k][j-1]-np.abs(v[i][k][j-1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])+p[i][k][j-1]*(v[i][k+1][j-1]-v[i][k][j-1]))*(t/hh)+(R[i][k][j-1]+np.abs(R[i][k][j-1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])*(t/hh)+(R[i][k][j-1]-np.abs(R[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-1])*(t/hh)
+
+    
+                p[i][0][j]=pm
+                p[0][0][j]=pm
+                p[h1-1][0][j]=pm
+                p[0][hh1-1][j]=pp
+                p[h1-1][hh1-1][j]=pp
+                p[0][k][j]=p[1][k][j]
+                p[i][hh1-1][j]=pp
+                p[h1-1][k][j]=p[h1-2][k][j]
+                ppp=0
+                sup2=0
+                if(i==h1-2 and k==hh1-2):
+                    for jj in range(1,tt1):
+                        
+                        if(ppp==1):
+                            break
+                        
+                        for ii in range(1,h1-1): 
+                            for kk in range(1,hh1-1):
+                    
+
+                            
+                                Pr[ii][kk][jj]=Pr[ii][kk][jj-1]+((k1*(Pr[ii-1][kk][jj-1]-2*Pr[ii][kk][jj-1]+Pr[ii+1][kk][jj-1])/h**2)+(k2*(Pr[ii][kk-1][jj-1]-2*Pr[ii][kk][jj-1]+Pr[ii][kk+1][jj-1])/hh**2)+(k3*(p[ii][kk][j-1]-p[ii][kk-1][j-1])/hh))*tt
+                    
+                                Pr[ii][0][jj]=Pr[ii][1][jj]+pm/k1*hh
+                                #Pr[0][0][j]=Pr[0][1][j]+pp/k1*hh
+                                Pr[h1-1][0][jj]=Pr[h1-1][1][jj]+pm/k1*hh
+
+                                Pr[0][kk][jj]=Pr[1][kk][jj]
+                                #Pr[0][hh1-1][j]=Pr[1][hh1-1][j]
+                                Pr[0][0][jj]=Pr[1][0][jj]
+
+                                Pr[ii][hh1-1][jj]=Pr[ii][hh1-2][jj]-pp/k1*hh
+                                #Pr[h1-1][hh1-1][j]=Pr[h1-1][hh1-2][j]-pp/k1*hh
+                                Pr[0][hh1-1][jj]=Pr[0][hh1-2][jj]-pp/k1*hh
+
+                                Pr[h1-1][kk][jj]=Pr[h1-2][kk][jj]
+                                #Pr[h1-1][0][j]=Pr[h1-2][0][j]
+                                Pr[h1-1][hh1-1][jj]=Pr[h1-2][hh1-1][jj]
+                                
+                                
+                                if(ii==2 and sup2==0):
+                                    
+                                    maxk.append(np.abs(Pr[ii][kk][jj]-Pr[ii][kk][jj-1]))
+            
+                                
+                                    if(kk==hh1-2):
+                                        maxfromk=max(maxk)
+                                        if(maxfromk<tt*hh):
+                                            sup=jj
+                                            sup1=130
+                                 
+                                        print(maxfromk,j,jj)
+                                        maxk=[]
+                                
+                         
+                                    
+                                if(jj==sup+1 and ppp==0 and sup1==130): 
+        
+
+                                    Pr[ii][kk][0]=Pr[ii][kk][sup]
+                                    
+                                    Pr[ii][0][0]=Pr[ii][0][sup]
+                                    Pr[h1-1][0][0]=Pr[h1-1][0][sup]
+                                    
+                                    Pr[0][kk][0]=Pr[0][kk][sup]
+                                    Pr[0][0][0]=Pr[0][0][sup]
+                                    
+                                    Pr[ii][hh1-1][0]=Pr[ii][hh1-1][sup]
+                                    Pr[0][hh1-1][0]=Pr[0][hh1-1][sup]
+                                    
+                                    Pr[h1-1][kk][0]=Pr[h1-1][kk][sup]
+                                    Pr[h1-1][hh1-1][0]=Pr[h1-1][hh1-1][sup]
+                                    
+                                    
+                                    Prr[ii][kk][j]=Pr[ii][kk][sup]
+                                    
+                                    Prr[ii][0][j]=Pr[ii][0][sup]
+                                    Prr[h1-1][0][j]=Pr[h1-1][0][sup]
+                                    
+                                    Prr[0][kk][j]=Pr[0][kk][sup]
+                                    Prr[0][0][j]=Pr[0][0][sup]
+                                    
+                                    Prr[ii][hh1-1][j]=Pr[ii][hh1-1][sup]
+                                    Prr[0][hh1-1][j]=Pr[0][hh1-1][sup]
+                                    
+                                    Prr[h1-1][kk][j]=Pr[h1-1][kk][sup]
+                                    Prr[h1-1][hh1-1][j]=Pr[h1-1][hh1-1][sup]
+                                    
+                                    sup2=1
+                                    if(ii==h1-2 and kk==hh1-2):
+                                        ppp=1
+                                        sup1=0
+def plot(t):
+    fig=pylab.figure()
+    axes=Axes3D(fig)
+    axes.plot_surface(xx,yy, p[:,:,int(t*(t1-1))])
+    pylab.xlabel("y")
+    pylab.ylabel("x")
+    title = "Приближенное решение p(t=" + str(t) + ")"
+    pylab.title(title)
+    pylab.show()
+
+t=[0,0.01,0.02,0.03,0.04,0.05,0.1,0.12,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+for i in range(len(t)):
+
+    plot(t[i])
