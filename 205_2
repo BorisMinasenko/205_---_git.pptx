@@ -1,0 +1,93 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+import pylab
+from numpy import linalg as la
+from mpl_toolkits.mplot3d import Axes3D from tqdm import notebook
+t=0.008 tt=0.000155 h=0.025 hh=0.025
+k1=0.02 k2=0.01 k3=0.017 k4=0.01 k5=100 k6=16 #k5=1000 pp=1.2 pm=1 Pr0=0 ppp=0 sup=0 sup1=0 sup2=0
+tt1=1+int(1/tt) t1=1+int(1/t)
+#t1=1000 hh1=1+int(1/hh) h1=1+int(1/h) p=np.zeros((h1,hh1,t1)) Pr=np.zeros((h1,hh1,tt1)) Prr=np.zeros((h1,hh1,t1)) maxk=[]
+u=np.zeros((h1,hh1,t1)) v=np.zeros((h1,hh1,t1)) R=np.zeros((h1,hh1,t1))
+i=0 k=0 j=0 ii=0
+29
+kk=0
+for i in range(0,h1):
+for k in range(0,hh1):
+if(k>=(hh1-1)/2):
+p[i][k][0]=pp Pr[i][k][0]=pp*((hh1-1)*hh-k*hh) Prr[i][k][0]=pp*((hh1-1)*hh-k*hh)
+else:
+p[i][k][0]=pm Pr[i][k][0]=pp*(hh1-1)*hh/2+pm*((hh1-1)*hh/2-k*hh) Prr[i][k][0]=pp*(hh1-1)*hh/2+pm*((hh1-1)*hh/2-k*hh)
+print(Prr[i][k][0] ) #print(p[i][hh1-1][0])
+x=np.arange(0,1+h,h) y=np.arange(0,1+hh,hh) xx,yy=np.meshgrid(x,y)
+for j in notebook.tqdm(range(1,t1))
+for i in range(1,h1-1):
+for k in range(1,hh1-1):
+u[i][k][j-1]=(-k1*(Prr[i+1][k][j-1]-Prr[i][k][j-1])/h) u[0][k][j-1]=0
+u[h1-1][k][j-1]=0
+u[h1-1][0][j-1]=0
+u[0][hh1-1][j-1]=0
+u[0][0][j-1]=0
+u[h1-1][hh1-1][j-1]=0
+u[i][0][j-1]=0
+u[i][hh1-1][j-1]=0 v[i][k][j-1]=-k1*(Prr[i][k+1][j-1]-Prr[i][k][j-1])/hh-k3*p[i][k][j-1] #if(i==5):
+#print((Prr[i][k+1][j-1]-Prr[i][k][j-1])/hh,p[i][k][j-1]) v[0][k][j-1]=0
+v[h1-1][k][j-1]=0
+v[h1-1][0][j-1]=0
+v[0][hh1-1][j-1]=0 v[0][0][j-1]=0 v[h1-1][hh1-1][j-1]=0 v[i][0][j-1]=0 v[i][hh1-1][j-1]=0
+#R[i][k][j-1] = k4*(pp + pm - 2*p[i][k][j-1])**3/(pp - pm)**2
+R[i][k][j-1] =k4*((-pm + 2*p[i][k][j-1] - pp)*(1-k6*(p[i][k][j-1]-pm)*(p[i][k][j-1]- pp)/((pp-pm)**2)))
+R[i][0][j-1] = k4*((-pm + 2*p[i][0][j-1] - pp)*(1-k6*(p[i][0][j-1]-pm)*(p[i][0][j-1]- pp)/((pp-pm)**2)))
+
+
+R[h1-1][k][j-1] = k4*((-pm + 2*p[h1-1][k][j-1] - pp)*(1-k6*(p[h1-1][k][j-1]-pm)*(p[h1- 1][k][j-1]-pp)/((pp-pm)**2)))
+R[0][k][j-1] = k4*((-pm + 2*p[0][k][j-1] - pp)*(1-k6*(p[0][k][j-1]-pm)*(p[0][k][j-1]- pp)/((pp-pm)**2)))
+R[0][0][j-1] = k4*((-pm + 2*p[0][0][j-1] - pp)*(1-k6*(p[0][0][j-1]-pm)*(p[0][0][j-1]- pp)/((pp-pm)**2)))
+R[i][hh1-1][j-1] = k4*((-pm + 2*p[i][hh1-1][j-1] - pp)*(1-k6*(p[i][hh1-1][j-1]- pm)*(p[i][hh1-1][j-1]-pp)/((pp-pm)**2)))
+R[h1-1][hh1-1][j-1] = k4*((-pm + 2*p[h1-1][hh1-1][j-1] - pp)*(1-k6*(p[h1-1][hh1-1][j- 1]-pm)*(p[h1-1][hh1-1][j-1]-pp)/((pp-pm)**2)))
+R[h1-1][0][j-1] = k4*((-pm + 2*p[h1-1][0][j-1] - pp)*(1-k6*(p[h1-1][0][j-1]-pm)*(p[h1- 1][0][j-1]-pp)/((pp-pm)**2)))
+R[0][hh1-1][j-1] = k4*((-pm + 2*p[0][hh1-1][j-1] - pp)*(1-k6*(p[0][hh1-1][j-1]- pm)*(p[0][hh1-1][j-1]-pp)/((pp-pm)**2
+#p[i][k][j]=p[i][k][j-1]-k2*((u[i][k][j-1]+np.abs(u[i][k][j-1]))/2*(p[i][k][j-1]-p[i-1][k][j- 1])+(u[i][k][j-1]-np.abs(u[i][k][j-1]))/2*(p[i+1][k][j-1]-p[i][k][j-1])+p[i][k][j-1]*(u[i+1][k][j-1]-u[i][k][j- 1]))*(t/h)-k2*((v[i][k][j-1]+np.abs(v[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-1])+(v[i][k][j-1]- np.abs(v[i][k][j-1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])+p[i][k][j-1]*(v[i][k+1][j-1]-v[i][k][j-1]))*(t/hh)- k5*((R[i][k][j-1]+np.abs(R[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-1])*(t/hh)+(R[i][k][j-1]-np.abs(R[i][k][j- 1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])*(t/hh))
+if ((pm <= p[i][k][j-1]) & (p[i][k][j-1] <= (pp+pm)/2)): Gk = 3
+else:
+Gk = 1
+p[i][k][j] = (p[i][k][j-1] -k2*((u[i][k][j-1]+np.abs(u[i][k][j-1]))/2*(p[i][k][j-1]-p[i-1][k][j-1])+(u[i][k][j-1]-
+np.abs(u[i][k][j-1]))/2*(p[i+1][k][j-1]-p[i][k][j-1])+p[i][k][j-1]*(u[i+1][k][j-1]-u[i][k][j-1]))*(t/h) -k2*((v[i][k][j-1]+np.abs(v[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-1])+(v[i][k][j-1]-
+np.abs(v[i][k][j-1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])+p[i][k][j-1]*(v[i][k+1][j-1]-v[i][k][j-1]))*(t/hh) -Gk*k5*((R[i][k][j-1]+np.abs(R[i][k][j-1]))/2*(p[i][k][j-1]-p[i][k-1][j-
+1])*(t/hh)+(R[i][k][j-1]-np.abs(R[i][k][j-1]))/2*(p[i][k+1][j-1]-p[i][k][j-1])*(t/hh)) )
+p[i][0][j]=pm p[0][0][j]=pm p[h1-1][0][j]=pm p[0][hh1-1][j]=pp p[h1-1][hh1-1][j]=pp p[0][k][j]=p[1][k][j] p[i][hh1-1][j]=pp p[h1-1][k][j]=p[h1-2][k][j]
+ppp=0
+sup2=0
+if(i==h1-2 and k==hh1-2):
+for jj in range(1,tt1):
+if(ppp==1): break
+for ii in range(1,h1-1):
+
+
+for kk in range(1,hh1-1):
+Pr[ii][kk][jj]=Pr[ii][kk][jj-1]+((k1*(Pr[ii-1][kk][jj-1]-2*Pr[ii][kk][jj- 1]+Pr[ii+1][kk][jj-1])/h**2)+(k1*(Pr[ii][kk-1][jj-1]-2*Pr[ii][kk][jj-1]+Pr[ii][kk+1][jj-
+1])/hh**2)+(k3*(p[ii][kk][j-1]-p[ii][kk-1][j-1])/hh))*tt
+Pr[ii][0][jj]=Pr[ii][1][jj]+p[ii][0][j-1]*k3/k1*hh #Pr[0][0][j]=Pr[0][1][j]+pp/k1*hh Pr[h1-1][0][jj]=Pr[h1-1][1][jj]+p[h1-1][0][j-1]*k3/k1*hh
+Pr[0][kk][jj]=Pr[1][kk][jj] #Pr[0][hh1-1][j]=Pr[1][hh1-1][j] Pr[0][0][jj]=Pr[1][0][jj]
+Pr[ii][hh1-1][jj]=Pr[ii][hh1-2][jj]-p[ii][hh1-1][j-1]*k3/k1*hh #Pr[h1-1][hh1-1][j]=Pr[h1-1][hh1-2][j]-pp/k1*hh Pr[0][hh1-1][jj]=Pr[0][hh1-2][jj]-p[0][hh1-1][j-1]*k3/k1*hh
+Pr[h1-1][kk][jj]=Pr[h1-2][kk][jj] #Pr[h1-1][0][j]=Pr[h1-2][0][j] Pr[h1-1][hh1-1][jj]=Pr[h1-2][hh1-1][jj]
+if(sup2==0 and sup1==0): maxk.append(np.abs(Pr[ii][kk][jj]-Pr[ii][kk][jj-1]))
+if(kk==hh1-2 and ii==hh1-2): maxfromk=max(maxk) if(maxfromk<tt*hh):
+sup=jj-1 sup1=130
+##print(maxfromk,j,jj) maxk=[]
+if(jj==sup+2 and ppp==0 and sup1==130):
+Pr[ii][kk][0]=Pr[ii][kk][sup]
+Pr[ii][0][0]=Pr[ii][0][sup] Pr[h1-1][0][0]=Pr[h1-1][0][sup]
+Pr[0][kk][0]=Pr[0][kk][sup] Pr[0][0][0]=Pr[0][0][sup]
+
+
+Pr[ii][hh1-1][0]=Pr[ii][hh1-1][sup] Pr[0][hh1-1][0]=Pr[0][hh1-1][sup]
+Pr[h1-1][kk][0]=Pr[h1-1][kk][sup] Pr[h1-1][hh1-1][0]=Pr[h1-1][hh1-1][sup]
+Prr[ii][kk][j]=Pr[ii][kk][sup]
+Prr[ii][0][j]=Pr[ii][0][sup] Prr[h1-1][0][j]=Pr[h1-1][0][sup]
+Prr[0][kk][j]=Pr[0][kk][sup] Prr[0][0][j]=Pr[0][0][sup]
+Prr[ii][hh1-1][j]=Pr[ii][hh1-1][sup] Prr[0][hh1-1][j]=Pr[0][hh1-1][sup]
+Prr[h1-1][kk][j]=Pr[h1-1][kk][sup] Prr[h1-1][hh1-1][j]=Pr[h1-1][hh1-1][sup]
+sup2=1
+if(ii==h1-2 and kk==hh1-2):
+ppp=1 sup1=0
